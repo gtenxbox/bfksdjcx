@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Generated images
+*.png
+
+# Log and state files that might contain sensitive info if not handled properly
+# We will commit progress_state.json, so we will not ignore it.
+# activity.log
+
+# Re-include the main banana image
+!banana.png
+
+# Ignore test directory
+test/ 
