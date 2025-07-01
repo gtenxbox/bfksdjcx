@@ -2,6 +2,7 @@ import os
 import json
 import logging
 from datetime import datetime
+from pytz import timezone, utc
 from PIL import Image
 import tweepy
 from dotenv import load_dotenv
@@ -20,6 +21,8 @@ ACTIVITY_LOG = 'activity.log'
 
 # Set up logging
 logging.basicConfig(filename=ACTIVITY_LOG, level=logging.INFO, format='%(asctime)s %(message)s')
+
+PST = timezone('US/Pacific')
 
 def get_year_progress():
     now = datetime.utcnow()
@@ -64,8 +67,8 @@ def crop_banana(percent):
     cropped.save(cropped_path)
     return cropped_path
 
-def tweet_progress(percent, percent_float, image_path):
-    caption = f"{datetime.utcnow().year} is {percent}% approved on the banana scale"
+def tweet_progress(percent, percent_float, image_path, pst_time_str):
+    caption = f"{datetime.utcnow().year} is {percent}% approved on the banana scale (PST: {pst_time_str})"
     # v1.1: Authenticate for media upload
     auth = tweepy.OAuth1UserHandler(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     api = tweepy.API(auth)
@@ -82,17 +85,24 @@ def tweet_progress(percent, percent_float, image_path):
     )
     # Post tweet with media using v2 endpoint
     response = client.create_tweet(text=caption, media_ids=[media_id])
-    logging.info(f"Tweeted: {caption} with image {image_path} | Tweet response: {response}")
-    print(f"Tweeted: {caption} with image {image_path}")
+    log_msg = f"[PST: {pst_time_str}] Tweeted: {caption} with image {image_path} | Tweet response: {response}"
+    logging.info(log_msg)
+    print(log_msg)
+    return log_msg
 
 def main():
+    now_utc = datetime.now(utc)
+    now_pst = now_utc.astimezone(PST)
+    pst_time_str = now_pst.strftime('%Y-%m-%d %H:%M:%S %Z')
     percent, percent_float = get_year_progress()
     last_percent = load_last_percent()
     if last_percent is not None and percent <= last_percent:
-        print(f"No new percent to tweet. Last: {last_percent}, Current: {percent}")
+        log_msg = f"[PST: {pst_time_str}] No new percent to tweet. Last: {last_percent}, Current: {percent}"
+        logging.info(log_msg)
+        print(log_msg)
         return
     image_path = crop_banana(percent)
-    tweet_progress(percent, percent_float, image_path)
+    tweet_log = tweet_progress(percent, percent_float, image_path, pst_time_str)
     save_last_percent(percent)
 
 if __name__ == '__main__':

@@ -3,7 +3,7 @@ name: Tweet Year Progress Banana
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 13 * * *' # Runs at 13:00 UTC, which is 9:00 AM ET
+    - cron: '*/1 * * * *' # Runs every minute
 
 jobs:
   tweet:
