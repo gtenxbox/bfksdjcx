@@ -1,3 +1,4 @@
 Pillow
 tweepy
-python-dotenv 
+python-dotenv
+pytz 
