@@ -68,7 +68,7 @@ def crop_banana(percent):
     return cropped_path
 
 def tweet_progress(percent, percent_float, image_path, pst_time_str):
-    caption = f"{datetime.utcnow().year} is {percent}% approved on the banana scale (PST: {pst_time_str})"
+    caption = f"{datetime.utcnow().year} is {percent}% approved on the banana scale"
     # v1.1: Authenticate for media upload
     auth = tweepy.OAuth1UserHandler(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     api = tweepy.API(auth)
