@@ -102,7 +102,7 @@ def main():
         print(log_msg)
         return
     image_path = crop_banana(percent)
-    #tweet_log = tweet_progress(percent, percent_float, image_path, pst_time_str)
+    tweet_log = tweet_progress(percent, percent_float, image_path, pst_time_str)
     save_last_percent(percent)
 
 if __name__ == '__main__':
