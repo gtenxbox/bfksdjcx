@@ -48,23 +48,36 @@ def save_last_percent(percent):
         json.dump({'last_percent': percent}, f)
 
 def crop_banana(percent):
+    """Create reveal with exact background color matching"""
+    
+    # Load the original banana image
     img = Image.open(BANANA_IMAGE)
     width, height = img.size
-    total_pixels = width * height
-    reveal_pixels = int((percent / 100) * total_pixels)
-    max_square = min(width, height)
-    square_pixels = max_square * max_square
-    if reveal_pixels <= square_pixels:
-        side = int(reveal_pixels ** 0.5)
-        box = (0, 0, side, side)
-    else:
-        extra_pixels = reveal_pixels - square_pixels
-        extra_width = extra_pixels // max_square
-        box = (0, 0, max_square + extra_width, max_square)
-        box = (box[0], box[1], min(box[2], width), min(box[3], height))
-    cropped = img.crop(box)
+    
+    # Create a copy of the original image to work with
+    result = img.copy()
+    
+    # Calculate the reveal width based on percentage
+    reveal_width = int((percent / 100) * width)
+    
+    # Create a mask for the hidden portion (right side)
+    if reveal_width < width:
+        # Create a transparent overlay for the hidden portion
+        overlay = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        
+        # Fill the hidden portion with the background color
+        # We'll use a very light gray that matches the original background
+        background_color = (246, 246, 246, 255)  # The exact color we detected
+        
+        # Create a rectangle for the hidden portion
+        hidden_region = Image.new('RGBA', (width - reveal_width, height), background_color)
+        overlay.paste(hidden_region, (reveal_width, 0))
+        
+        # Composite the overlay onto the result
+        result = Image.alpha_composite(result, overlay)
+    
     cropped_path = f'banana_cropped_{percent}.png'
-    cropped.save(cropped_path)
+    result.save(cropped_path, quality=95)
     return cropped_path
 
 def tweet_progress(percent, percent_float, image_path, pst_time_str):
