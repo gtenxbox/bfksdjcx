@@ -40,7 +40,8 @@ jobs:
           git add progress_state.json activity.log
           if ! git diff --quiet || ! git diff --staged --quiet; then
             git commit -m "Update progress"
-            git push https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git HEAD:main || echo "Push failed"
+            git remote set-url origin https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git
+            git push origin HEAD:main || echo "Push failed"
           else
             echo "No changes to commit"
           fi
