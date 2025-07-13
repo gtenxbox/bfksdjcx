@@ -47,12 +47,3 @@ jobs:
           else
             echo "No changes to commit"
           fi
-
-      - name: Debug token usage
-        run: |
-          echo "GH_PAT is set? ${GH_PAT}"
-          git remote -v
-          git config --list
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
-
