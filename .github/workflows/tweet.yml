@@ -36,6 +36,7 @@ jobs:
         run: |
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          
           git add progress_state.json activity.log
           if ! git diff --quiet || ! git diff --staged --quiet; then
             git commit -m "Update progress"
@@ -43,3 +44,12 @@ jobs:
           else
             echo "No changes to commit"
           fi
+
+      - name: Debug token usage
+        run: |
+          echo "GH_PAT is set? ${GH_PAT}"
+          git remote -v
+          git config --list
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+
